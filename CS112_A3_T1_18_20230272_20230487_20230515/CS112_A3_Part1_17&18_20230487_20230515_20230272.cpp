@@ -1,65 +1,418 @@
 /*
-File name: CS112_A3_Part1_17&18_20230487_20230515_20230272.cpp
-Authors:
+File name: CS112_A3_Part2B_17&18_20230515_20230487_20230272.cpp
 
+Authors:
 Author(1): Amr Khalid Mahfouz Mohammed
 Author(2): Youssef Bahaa Abdel Wahab
-Author(3): Youssef Hesham Ali Ali Zayan
+Author(3): Yousef Hesham Ali Ali Zayan
+
 IDS:
+ID(1): 20230272 --> Filter 1: Grayscale Conversion
+                --> Filter 4: Merge Images
+                --> Filter 7: Darken and Lighten 
+                --> Filter 10: Detect Image Edges
+                --> Filter 17: Samurais are passionate about capturing the world in infrared photography—let'sempower their pursuit !
+                --> Made: 1) Main menu for the program
+                          2) The diagram of the program
 
-ID(1): 20230272 --> Filter 7: Darken and Lighten & menu of main function.
-ID(2): 20230487 --> Filter 2: Black and White & Filter 5: Flip Image.
-ID(3): 20230515 --> Filter 3: Invert Image & Filter 12: Blur Images.
+ID(2): 20230487 --> Filter 2: Black and White 
+                --> Filter 5: Flip Image 
+                --> Filter 8: Crop Images
+                --> Filter 11: Resizing Images 
+                --> Filter 13: Wano doesn’t have good natural sunlight. Can you fix that?
+                --> Made: 1) Algorithm of the program
+                    
+
+ID(3): 20230515 --> Filter 3: Invert Image 
+                --> Filter 6: Rotate Image
+                --> Filter 9: Adding a Frame to the Picture
+                --> Filter 12: Blur Images
+                --> Filter 16: Wano looks so purple at night can you make Luffy look purple?
+                --> Fixed : 1) Blur errors in upgraded versions 
+                            2) Rearranged code 
+                            3) Removed extra options that has no need
+                            4) Fixed errors for some if conditions
+                            5) Added comments for the program
+
 All of the team handled errors and exceptions with distributing the work fairly between us.
+
+______________________________________________________________________________________________________________
+
+Diagram of the program : https://docs.google.com/presentation/d/1q4wpNq0K4Csyq69uM6ybJmuN9wK32BUw13NyNJGIy7g/edit?usp=sharing
+______________________________________________________________________________________________________________
+pseudo code:
+
+ Start
+Import required libraries:
+    - iostream
+    - fstream
+    - "Image_Class.h"
+    - cmath
+
+Declare namespace:
+    - std
+function gray_scale(image, save_path):
+    for each pixel (i, j) in image:
+        grayscale = 0.299 * (image(i, j, 0) + 0.587 * (image(i, j, 1) + 0.114 * (image(i, j, 2))))
+        set image(i, j, 0) to grayscale
+        set image(i, j, 1) to grayscale
+        set image(i, j, 2) to grayscale
+    save image to save_path
+
+function black_and_white(image, save_path):
+    threshold = 128
+    for each pixel (i, j) in image:
+        grayscale = 0.299 * image(i, j, 0) + 0.587 * image(i, j, 1) + 0.114 * image(i, j, 2)
+        if grayscale >= threshold:
+            set image(i, j, 0) to 255
+            set image(i, j, 1) to 255
+            set image(i, j, 2) to 255
+        else:
+            set image(i, j, 0) to 0
+            set image(i, j, 1) to 0
+            set image(i, j, 2) to 0
+    save image to save_path
+
+function horizontal_flip(image, save_path):
+    flipped_image = create new image with same dimensions as image
+    for each pixel (i, j) in image:
+        for each channel k:
+            set flipped_image(i, j, k) to image(image.width - i - 1, j, k)
+    save flipped_image to save_path
+
+function vertical_flip(image, save_path):
+    flipped_image = create new image with same dimensions as image
+    for each pixel (i, j) in image:
+        for each channel k:
+            set flipped_image(i, j, k) to image(i, image.height - j - 1, k)
+    save flipped_image to save_path
+
+function blur_image(image, save_path):
+    kernel_size = 38
+    padding = kernel_size / 2
+    new_width = image.width + 2 * padding
+    new_height = image.height + 2 * padding
+    temporary_picture = create array of size new_width * new_height * image.channels
+
+    copy image data with padding into temporary_picture
+
+    for each pixel (x, y) in image:
+        apply blur to the padded image at pixel (x, y)
+
+    delete temporary_picture
+
+    save image to save_path
+
+function invert_colors(image, save_path):
+    for each pixel (i, j) in image:
+        set image(i, j, 0) to 255 - image(i, j, 0) // Red channel
+        set image(i, j, 1) to 255 - image(i, j, 1) // Green channel
+        set image(i, j, 2) to 255 - image(i, j, 2) // Blue channel
+    save image to save_path
+function Lighter_or_darker(image, save_path):
+    loop:
+        clear input buffer
+        create new image new_img with same dimensions as image
+        display message: "choose whether to make the image (1) darker or (2) lighter : "
+        read user input into light_or_dark_choice
+        while light_or_dark_choice is not "1" and light_or_dark_choice is not "2":
+            display message: "Invalid input"
+            read user input into light_or_dark_choice
+        if light_or_dark_choice is "1":
+            for each pixel (i, j) in image:
+                for each channel k:
+                    colors[k] = image(i, j, k)
+                    new_img.setPixel(i, j, k, colors[k] - colors[k] / 2)
+        else if light_or_dark_choice is "2":
+            for each pixel (i, j) in image:
+                for each channel k:
+                    colors[k] = image(i, j, k)
+                    new_img.setPixel(i, j, k, min(colors[k] + colors[k] / 2, 255))
+        save new_img to save_path
+        exit loop
+
+function edge_detection(image, save_path, new_image):
+    for i from 1 to image.width - 1:
+        for j from 1 to image.height - 1:
+            horizontal_gradient = compute horizontal gradient at pixel (i, j)
+            vertical_gradient = compute vertical gradient at pixel (i, j)
+            total_gradient = round(sqrt(horizontal_gradient^2 + vertical_gradient^2))
+            threshold = 170
+            for each channel k:
+                if total_gradient >= threshold:
+                    set new_image(i, j, k) to 0
+                else:
+                    set new_image(i, j, k) to 255
+    save new_image to save_path
+
+function infra_red_filter(image, save_path):
+    for each pixel (i, j) in image:
+        gray = compute grayscale value at pixel (i, j)
+        set image(i, j, 0) to 255
+        set image(i, j, 1) to 255 - gray
+        set image(i, j, 2) to 255 - gray
+    save image to save_path
+
+function addFrame(image, save_path, R, G, B):
+    fwidth = image.width / 100
+    fspace = image.width / 50
+    create new image fimg with same dimensions as image
+    for each pixel (i, j) in image:
+        copy pixel value from image to fimg
+    for i from fspace to image.width - fspace:
+        for j from fspace to image.height - fspace:
+            if i < fspace + fwidth or i >= image.width - fspace - fwidth or j < fspace + fwidth or j >= image.height - fspace - fwidth:
+                set fimg(i, j, 0) to R
+                set fimg(i, j, 1) to G
+                set fimg(i, j, 2) to B
+    save fimg to save_path
+
+function addDoubleFrame(image, save_path, R, G, B):
+    fwidth = image.width / 100
+    fspace = image.width / 25
+    create new image fimg with same dimensions as image
+    for each pixel (i, j) in image:
+        copy pixel value from image to fimg
+    for i from fspace to image.width - fspace:
+        for j from fspace to image.height - fspace:
+            if i < fspace + fwidth or i >= image.width - fspace - fwidth or j < fspace + fwidth or j >= image.height - fspace - fwidth:
+                set fimg(i, j, 0) to R
+                set fimg(i, j, 1) to G
+                set fimg(i, j, 2) to B
+    save fimg to save_path
+function addCornerSquares(image, R, G, B):
+    squareSize = image.width / 17
+    if squareSize * 2 >= image.width or squareSize * 2 >= image.height:
+        throw runtime_error("Specified square size is too large for the image")
+    // Top left corner
+    for i from 0 to squareSize - 1:
+        for j from 0 to squareSize - 1:
+            image(i, j, 0) = R
+            image(i, j, 1) = G
+            image(i, j, 2) = B
+    // Top right corner
+    for i from image.width - squareSize to image.width - 1:
+        for j from 0 to squareSize - 1:
+            image(i, j, 0) = R
+            image(i, j, 1) = G
+            image(i, j, 2) = B
+    // Bottom left corner
+    for i from 0 to squareSize - 1:
+        for j from image.height - squareSize to image.height - 1:
+            image(i, j, 0) = R
+            image(i, j, 1) = G
+            image(i, j, 2) = B
+    // Bottom right corner
+    for i from image.width - squareSize to image.width - 1:
+        for j from image.height - squareSize to image.height - 1:
+            image(i, j, 0) = R
+            image(i, j, 1) = G
+            image(i, j, 2) = B
+
+function filterofpurple(image, new_image_name):
+    for each pixel (i, j) in image:
+        new_image(i, j, 0) = 0.8 * image(i, j, 0)
+        new_image(i, j, 1) = 0.00005 * image(i, j, 2)
+        new_image(i, j, 2) = 0.99 * image(i, j, 2)
+    save new_image to new_image_name
+
+function rotateImageClockwise90(image, new_image_name):
+    for each pixel (i, j) in image:
+        h_rot = image.height - j - 1
+        w_rot = i
+        rotate_90(h_rot, w_rot, k) = image(i, j, k)
+    save rotate_90 to new_image_name
+
+function the180(image, save):
+    create temp image with dimensions same as image
+    for each pixel (i, j) in image:
+        temp(i, j, k) = image(i, image.height - 1 - j, k)
+    for each pixel (i, j) in temp:
+        rot_180(i, j, k) = temp(image.width - 1 - i, j, k)
+    save rot_180 to save
+
+function rotateImageClockwise270(image, new_image_name):
+    for each pixel (i, j) in image:
+        if image.width - i - 1 < 0:
+            continue
+        else:
+            rotate_270(j, image.width - 1 - i, 0) = image(i, j, 0)
+            rotate_270(j, image.width - 1 - i, 1) = image(i, j, 1)
+            rotate_270(j, image.width - 1 - i, 2) = image(i, j, 2)
+    save rotate_270 to new_image_name
+
+function crop(image, new_image_name):
+    read width, height, startx, starty from user
+    create crop image with dimensions (width, height)
+    for i from 0 to height - 1:
+        for j from 0 to width - 1:
+            for k from 0 to 2:
+                crop(j, i, k) = image(startx + j, starty + i, k)
+    save crop to new_image_name
+
+function resize(image, new_image_name, new_width, new_height):
+    create res image with dimensions (new_width, new_height)
+    hrat = image.height / new_height
+    wrat = image.width / new_width
+    for i from 0 to new_height - 1:
+        for j from 0 to new_width - 1:
+            origx = j * wrat
+            origy = i * hrat
+            for k from 0 to 2:
+                res(j, i, k) = image.getPixel(origx, origy, k)
+    save res to new_image_name
+
+function resize_for_merge(image, new_width, new_height):
+    create res image with dimensions (new_width, new_height)
+    hrat = image.height / new_height
+    wrat = image.width / new_width
+    for i from 0 to new_height - 1:
+        for j from 0 to new_width - 1:
+            origx = j * wrat
+            origy = i * hrat
+            for k from 0 to 2:
+                res(j, i, k) = image.getPixel(origx, origy, k)
+    return res
+
+function merge(img1, img2, save, min_width, min_height):
+    create new_image with dimensions (min_width, min_height)
+    for i from 0 to min_width - 1:
+        for j from 0 to min_height - 1:
+            for k from 0 to 2:
+                avg = (img1(i, j, k) + img2(i, j, k)) / 2
+                new_image(i, j, k) = avg
+    save new_image to save
+
+function sun_light(img, new_image_name):
+    for each pixel (x, y) in img:
+        red = img(x, y, 0)
+        green = img(x, y, 1)
+        blue = img(x, y, 2)
+        // Adjust RGB values
+        red += 15
+        green += 40
+        blue -= 25
+        // Clamp values
+        if red > 255: red = 255
+        if green > 255: green = 255
+        if blue < 0: blue = 0
+        // Update image with clamped values
+        img(x, y, 0) = red
+        img(x, y, 1) = green
+        img(x, y, 2) = blue
+    save img to new_image_name
+function check_user_input(choice):
+    valid_options = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"]
+    size = length(valid_options)
+    for i from 0 to size - 1:
+        if choice == valid_options[i]:
+            return true
+    return false
+
+function isValidFilename(filename):
+    extension = find extension from filename
+    if extension is null:
+        print "Invalid filename: " + filename
+        return false
+    return true
+
+function main():
+    while true:
+        filename, new_image_name, final_framed_name = "", "", ""
+        temp_framed_name = filename + "_temp_framed.jpg"
+        final_temp_name = filename + "_final_framed.jpg"
+        choice = ""
+
+        print "Choose a filter: "
+        print "[1] Grayscale"
+        print "[2] Black and White"
+        print "[3] Flip"
+        print "[4] Blur"
+        print "[5] Inverted colors"
+        print "[6] Lighter or darker"
+        print "[7] Detect edges"
+        print "[8] Rotate Image"
+        print "[9] Adding a Frame to the Picture"
+        print "[10] Crop"
+        print "[11] Resize"
+        print "[12] Merge 2 photos"
+        print "Bonus: "
+        print "[13] The Land of Wano"
+        print "[14] Infrared"
+        print "[15] Purple at Night"
+        print "[16] Exit"
+        print "Enter your choice: "
+
+        choice = input()
+
+        if choice == "16":
+            break
+
+        while true:
+            try:
+                print "Enter file name: "
+                filename = input()
+                load_image(filename)
+                break
+            except:
+                continue
+
+        print "Enter new name to save with extension (.jpg, .bmp, .png, .tga): "
+        new_image_name = input()
+        valid = isValidFilename(new_image_name)
+        while not valid:
+            print "Enter new name to save with extension (.jpg, .bmp, .png, .tga): "
+            new_image_name = input()
+            valid = isValidFilename(new_image_name)
+
+        Original_image = load_image(filename)
+
+        if choice == "1":
+            grayscale(Original_image, new_image_name)
+        elif choice == "2":
+            black_and_white(Original_image, new_image_name)
+        elif choice == "3":
+            flip_choice = ""
+            print "Choose your flip: [1] horizontal flip or [2] vertical flip: "
+            flip_choice = input()
+            while flip_choice not in ["1", "2"]:
+                print "Invalid input! Please try again."
+                flip_choice = input()
+            if flip_choice == "1":
+                horizontalFlip(Original_image, new_image_name)
+            elif flip_choice == "2":
+                verticalFlip(Original_image, new_image_name)
+        elif choice == "4":
+            blurImage(Original_image, new_image_name)
+        elif choice == "5":
+            invertColors(Original_image, new_image_name)
+        elif choice == "6":
+            Lighter_or_darker(Original_image, new_image_name)
+        elif choice == "7":
+            gray_scale(Original_image, new_image_name)
+            gray_image = load_image(new_image_name)
+            edge_detection(gray_image, new_image_name)
+        elif choice == "8":
+            rotateImage(Original_image, new_image_name)
+        elif choice == "9":
+            addFrame(Original_image, new_image_name)
+        elif choice == "10":
+            crop(Original_image, new_image_name)
+        elif choice == "11":
+            resize(Original_image, new_image_name)
+        elif choice == "12":
+            merge(Original_image, new_image_name)
+        elif choice == "13":
+            sun_light(Original_image, new_image_name)
+        elif choice == "14":
+            infra_red_filter(Original_image, new_image_name)
+        elif choice == "15":
+            filterofpurple(Original_image, new_image_name)
+
+        print "The image has been saved successfully as \"" + new_image_name + "\"."
+
+End
 */
-
-
-/* ♣ The explanation for the code:
-• Header Files:
-    ○ iostream: Provides input/output functionalities for user interaction.
-    ○ fstream: Enables working with files for image reading and saving.
-    ○ Image_Class.h: definition for representing and manipulating images.
-
-• Functions:
-    ○ BlackAndWhite: Converts an image to black and white using a threshold.
-    ○ horizontalFlip: Flips an image horizontally.
-    ○ verticalFlip: Flips an image vertically.
-    ○ blurImage: Blurs an image using a box blur kernel.
-    ○ invertColors: Inverts the colors of an image.
-    ○ Lighter_or_darker: Adjusts the brightness of an image (lightens or darkens).
-    ○ check_user_input: Validates user input for filter choices.
-    ○ isValidFilename: Checks for valid image filenames with extensions.
-    ○ main: The main function that drives the program's flow.
-
-• Program Flow: 
-    ○ Enters a loop that continues until the user chooses to exit:
-        ♦ The program displays a menu listing available filters (Black and White, Flip, Blur, etc.).
-        ♦ The user selects a filter from the list.
-        ♦ The program validates the user's choice to ensure they selected a valid filter option.
-
-    ○ Prompts the user for the input filename and validates its existence:
-        ♦ The program asks the user to enter the filename of the image they want to process.
-        ♦ The program checks if the file exists and can be loaded successfully.
-
-    ○ Prompts the user for a new filename to save the modified image with an extension:
-        ♦ The program asks the user to choose a new name for the processed image,
-          including a valid image file extension (e.g., .jpg, .png, etc.).
-
-    ○ Calls the appropriate function based on the chosen filter to apply the effect:
-        ♦ Depending on the user's filter selection, the program calls the corresponding
-          function (e.g., BlackAndWhite for black and white conversion, horizontalFlip or verticalFlip 
-          for flipping, and so on).
-        ♦ The chosen function applies the filter effect to the loaded image.
-
-    ○ Saves the modified image with the new filename:
-        ♦ The program saves the processed image with the user-provided filename.
-
-    ○ Informs the user that the image has been saved successfully:
-        ♦ The program displays a message confirming that the image has been processed and saved successfully.
-
-    ○ The loop repeats, prompting the user for another filter and image until they choose to exit.
-*/
-
 
 #include <iostream>
 #include <fstream>
@@ -75,7 +428,7 @@ void gray_scale(Image img, string &save){
             // Convert to grayscale
             grayscale = 0.299*(img(i,j,0) + 0.587*(img(i,j,1) + 0.114*(img(i,j,2))));
             img(i,j,0) = grayscale; img(i,j,1) = grayscale; img(i,j,2) = grayscale;}}
-    img.saveImage(save);    
+    img.saveImage(save);
 }
 
 // Function to convert image to black and white
@@ -85,7 +438,7 @@ void BlackAndWhite(Image& img, string& save) {
     for (int i = 0; i < img.width; i++) {
         for (int j = 0; j < img.height; j++) {
             // Convert to grayscale
-            grayscale = (img.getPixel(i, j, 0) + img.getPixel(i, j, 1) + img.getPixel(i, j, 2))/3;
+            grayscale = 0.299*img.getPixel(i, j, 0) + 0.587*img.getPixel(i, j, 1) + 0.114*img.getPixel(i, j, 2);
             // Apply threshold
             if (grayscale >= h) {
                 // Set pixel to white
@@ -210,7 +563,7 @@ void blurImage(Image& img, string& save) {
 
     // Save the blurred image
     img.saveImage(save);
-  }
+}
 
 // Function to invert colors of an image.
 void invertColors(Image& img, string& save) {
@@ -275,46 +628,30 @@ void Lighter_or_darker(Image& img, const string& save) {
     }
 }
 
-// Function to check if the user chose a valid input for the filters.
-bool check_user_input(string choice){
-    string valid_options[] = {"1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17"};
-    int size = sizeof(valid_options)/sizeof(valid_options[0]);
-    for (int i = 0 ; i < size ; i++){
-        if(choice == valid_options[i]){
-            return true;}}
-            return false;
-            }
-
-bool isValidFilename(const std::string& filename) {
-    const char* extension = strrchr(filename.c_str(), '.');
-    if (extension == nullptr) {
-        std::cerr << "Invalid filename: " << filename << std::endl;
-        return false;
-    }
-    return true;}
-
 //  Function to detect the edges of images.
 void edge_detection(Image img, string save,Image new_image){
-/*  horizontal_sobel =  {-1, 0, 1}
-                        {-2, 0, 2}
-                        {-1, 0, 1}
+    /*  horizontal_sobel =  {-1, 0, 1}
+                            {-2, 0, 2}
+                            {-1, 0, 1}
 
-    vertical_sobel =  {1,   2,   1}
-                      {0,   0,   0}
-                      {-1 , -2, -1} */
+        vertical_sobel   =  {1,  2, 1}
+                            {0,  0, 0}
+                            {-1, -2,-1}
+    */
 
     for(int i = 1 ; i < img.width - 1 ; i++){
         for(int j = 1 ; j < img.height - 1 ; j++){ // pixel = 0 since it is in grey scale so it does not matter.
-            int horizontal_gradient = (-img(i-1,j-1,0) + img(i+1,j-1,0) - img(i-1,j,0)*2 + img(i+1,j,0)*2 - img(i-1,j+1,0) + img(i+1,j+1,0)); 
+            int horizontal_gradient = (-img(i-1,j-1,0) + img(i+1,j-1,0) - img(i-1,j,0)*2 + img(i+1,j,0)*2 - img(i-1,j+1,0) + img(i+1,j+1,0));
             int vertical_gradient = (img(i-1,j-1,0) + img(i,j-1,0)*2 + img(i+1,j-1,0) - img(i-1,j+1,0) - img(i,j+1,0)*2 - img(i+1,j+1,0));
             int total_gradient = ceil(sqrt(pow(horizontal_gradient,2) + pow(vertical_gradient,2)));
-            int threshold = 185;
+            int threshold = 170;
             for(int k = 0 ; k < img.channels ; k++){
                 if(total_gradient >= threshold){
                     new_image.setPixel(i,j,k,0);}
                 else{new_image.setPixel(i,j,k,255);}
-                }
-            }}
+            }
+        }
+    }
     new_image.saveImage(save);
 }
 
@@ -324,7 +661,7 @@ void infra_red_filter(Image img, string save){
         for(int j = 0 ; j < img.height ; j++){
             unsigned int gray = 0;
             gray = 0.299*(img.getPixel(i, j, 0)) + 0.587 * (img.getPixel(i, j, 1)) + 0.114*(img.getPixel(i, j, 2));
-            
+
             img.setPixel(i,j,0,255);
             img.setPixel(i, j, 1, (255 - gray) );
             img.setPixel(i, j, 2, (255 - gray) );
@@ -333,35 +670,352 @@ void infra_red_filter(Image img, string save){
     img.saveImage(save);
 }
 
+// Function to add frame to image (simple/Fancy)
+void addFrame(Image& img, string& save, unsigned char R, unsigned char G, unsigned char B) {
+    int w = img.width;
+    int h = img.height;
+    int fwidth = img.width / 100;
+    int fspace = img.width / 50;
+
+    // Calculate dimensions of the white area within the frame
+    int innerw = w - 2 * (fwidth + fspace); // Account for frame, space on both sides
+    int innerh = h - 2 * (fwidth + fspace);
+
+    Image fimg(w, h);
+    // Fill the entire image area with the original image content
+    for (int i = 0; i < w; i++) {
+        for (int j = 0; j < h; j++) {
+            fimg(i, j, 0) = img(i, j, 0);
+            fimg(i, j, 1) = img(i, j, 1);
+            fimg(i, j, 2) = img(i, j, 2);
+        }
+    }
+    // Fill the white frame area within the image
+    for (int i = fspace; i < w - fspace; i++) {
+        for (int j = fspace; j < h - fspace; j++) {
+            if (i < fspace + fwidth || i >= w - fspace - fwidth || j < fspace + fwidth || j >= h - fspace - fwidth) {
+                fimg(i, j, 0) = R;
+                fimg(i, j, 1) = G;
+                fimg(i, j, 2) = B;
+            }
+        }
+    }
+    fimg.saveImage(save);
+}
+
+//Function to add another frame to the fancy option
+void addDoubleFrame(Image& img, string& save, unsigned char R, unsigned char G, unsigned char B) {
+    int w = img.width;
+    int h = img.height;
+    int fwidth = img.width / 100;
+    int fspace = img.width / 25;
+
+    // Calculate dimensions of the white area within the frame
+    int innerw = w - 2 * (fwidth + fspace); // Account for frame, space on both sides
+    int innerh = h - 4 * (fwidth + fspace);
+
+    Image fimg(w, h);
+    // Fill the entire image area with the original image content
+    for (int i = 0; i < w; i++) {
+        for (int j = 0; j < h; j++) {
+            fimg(i, j, 0) = img(i, j, 0);
+            fimg(i, j, 1) = img(i, j, 1);
+            fimg(i, j, 2) = img(i, j, 2);
+        }
+    }
+    // Fill the white frame area within the image
+    for (int i = fspace; i < w - fspace; i++) {
+        for (int j = fspace; j < h - fspace; j++) {
+            if (i < fspace + fwidth || i >= w - fspace - fwidth || j < fspace + fwidth || j >= h - fspace - fwidth) {
+                fimg(i, j, 0) = R;
+                fimg(i, j, 1) = G;
+                fimg(i, j, 2) = B;
+            }
+        }
+    }
+    fimg.saveImage(save);
+}
+
+// Function used for the fancy frame that adds white suares to the corner of image
+void addCornerSquares(Image& img, unsigned char R, unsigned char G, unsigned char B) {
+    int w = img.width;
+    int h = img.height;
+    int squareSize = w/17;
+
+    // Ensure square size is valid relative to image size
+    if (squareSize * 2 >= w || squareSize * 2 >= h) {
+        throw runtime_error("Specified square size is too large for the image");
+    }
+
+    // Top left corner
+    for (int i = 0; i < squareSize; i++) {
+        for (int j = 0; j < squareSize; j++) {
+            img(i, j, 0) = R;
+            img(i, j, 1) = G;
+            img(i, j, 2) = B;
+        }
+    }
+
+    // Top right corner
+    for (int i = w - squareSize; i < w; i++) {
+        for (int j = 0; j < squareSize; j++) {
+            img(i, j, 0) = R;
+            img(i, j, 1) = G;
+            img(i, j, 2) = B;
+        }
+    }
+
+    // Bottom left corner
+    for (int i = 0; i < squareSize; i++) {
+        for (int j = h - squareSize; j < h; j++) {
+            img(i, j, 0) = R;
+            img(i, j, 1) = G;
+            img(i, j, 2) = B;
+        }
+    }
+
+    // Bottom right corner
+    for (int i = w - squareSize; i < w; i++) {
+        for (int j = h - squareSize; j < h; j++) {
+            img(i, j, 0) = R;
+            img(i, j, 1) = G;
+            img(i, j, 2) = B;
+        }
+    }
+}
+
+// Function to delete temporary file 
+bool deleteTempFile(const string& filename) {
+    if (remove(filename.c_str()) != 0) {
+        cerr << "Error deleting temporary file: " << filename << endl;
+        return false;
+    }
+    return true;
+}
+
+// Function to add purple shadow to image
+void filterofpurple(Image& img, string new_image_name) {
+    int h = img.height;
+    int w = img.width;
+
+    Image new_img(w,h);
+    for (int i = 0; i < w; i++) {
+        for (int j = 0; j < h; j++) {
+            new_img(i, j, 0) = 0.8* img(i, j, 0);
+            new_img(i, j, 1) = 0.00005*img(i, j, 2) ; // Green channel
+            new_img(i, j, 2) = 0.99*img(i, j, 2); // Blue channel
+        }
+    }
+    new_img.saveImage(new_image_name);
+}
+
+// Function that rotates image for the rotate filter by 90 degrees
+void rotateImageClockwise90(Image& img, string new_image_name) {
+    int h = img.height;
+    int w = img.width;
+
+    Image rotate_90(h,w);
+    for (int i = 0; i < w; i++) {
+        for (int j = 0; j < h; j++) {
+            for (int k = 0; k < 3; k++) {
+                int h_rot= h-j-1;
+                int w_rot= i;
+                rotate_90(h_rot, w_rot, k) =img(i, j, k);
+            }
+        }
+    }
+    rotate_90.saveImage(new_image_name);
+}
+
+// Function that rotates image for the rotate filter by 180 degrees
+void the180(Image& img, string& save) {
+    int h = img.height;
+    int w = img.width;
+    Image temp(w, h);
+    for (int i = 0; i < w; i++) {
+        for (int j = 0; j < h; j++) {
+            for (int k = 0; k < 3; k++){
+                temp(i, j, k) = img(i, h - 1 - j, k);
+            }
+        }
+    }
+    Image rot_180 (w,h);
+    for (int i=0; i <w ; i++){
+        for (int j=0; j<h;j++){
+            for (int k = 0; k < 3; k++){
+                rot_180(i , j , k) = temp (w-1-i , j ,k );
+            }
+        }
+    }
+    rot_180.saveImage(save);
+}
+
+// Function that rotates image for the rotate filter by 270 degrees
+void rotateImageClockwise270(Image& img, string new_image_name) {
+    int h = img.height;
+    int w = img.width;
+
+    Image rotate_270(h, w); // New image
+    for (int i = 0; i < w; i++) {
+        for (int j = 0; j < h; j++) {
+            if (w - i - 1 < 0) {
+                continue;
+            } else {
+                rotate_270(j, w - 1 - i, 0) = img(i, j, 0);
+                rotate_270(j, w - 1 - i, 1) = img(i, j, 1);
+                rotate_270(j, w - 1 - i, 2) = img(i, j, 2);
+            }
+        }
+    }
+    rotate_270.saveImage(new_image_name);
+}
+
+// Function to crop the inserted image by the dimensions given by the user
+void crop( Image& img,string new_image_name , int width , int height , int startx, int starty) {
+    Image crop(width, height);
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            for (int k = 0; k < 3; k++) {
+                crop(j, i, k) = img(startx + j, starty + i, k);
+            }
+        }
+    }
+    crop.saveImage( new_image_name);
+}
+
+// Function that resize the inserted image according to the dimensions entered by the user
+void resize(Image& img,string new_image_name, int new_width, int new_height){
+    Image res(new_width, new_height);
+    float hrat = (float) (img.height) / (new_height);
+    float wrat = (float) (img.width) / (new_width);
+    for (int i = 0; i < new_height; i++) {
+        for (int j = 0; j < new_width; j++) {
+            float origx = j * wrat;
+            float origy = i * hrat;
+            for (int c = 0; c < 3; ++c) {
+                res(j, i, c) = img.getPixel(origx, origy, c);
+            }
+        }
+    }
+    res.saveImage(new_image_name);
+}
+
+// Function that resize image inserted for the merge filter and return an image used for the main merge function
+Image resize_for_merge(Image img, int new_width, int new_height){
+    Image res(new_width, new_height);
+    float hrat = (float) (img.height) / (new_height);
+    float wrat = (float) (img.width) / (new_width);
+    for (int i = 0; i < new_height; i++) {
+        for (int j = 0; j < new_width; j++) {
+            float origx = j * wrat;
+            float origy = i * hrat;
+            for (int c = 0; c < 3; ++c) {
+                res(j, i, c) = img.getPixel(origx, origy, c);
+            }
+        }
+    }
+    return res;
+}
+
+// Main merge function that merges 2 images after resizing the first one 
+void merge(Image img1, Image img2, string save, int min_width, int min_height){
+    Image new_image(min_width, min_height);
+    for(int i = 0 ; i < min_width ; i++){
+        for(int j = 0; j < min_height ; j++){
+            int avg = 0;
+            for(int k = 0 ; k < 3 ; k++){
+                avg = float(img1(i, j, k) + img2(i, j, k))/2;
+                new_image.setPixel(i, j, k, avg);
+            }
+        }
+    }
+    new_image.saveImage(save);
+}
+//The function increases the brightness and warmth of an image
+void sun_light(Image& img,const string& new_image_name) {
+    for (int y = 0; y < img.height; y++) {
+        for (int x = 0; x < img.width; x++) {
+            unsigned int red = img(x, y, 0);
+            unsigned int green = img(x, y, 1);
+            unsigned int blue = img(x, y, 2);
+
+            // Adjust RGB values
+            red += 15;
+            green += 40;
+            blue -= 25;
+
+            // Clamp values
+            if (red > 255) red = 255;
+            if (green > 255) green = 255;
+            if (blue < 0) blue = 0;
+
+            // Update image with clamped values
+            img(x, y, 0) = red;
+            img(x, y, 1) = green;
+            img(x, y, 2) = blue;
+        }
+    }
+    img.saveImage(new_image_name);
+}
+
+// Function to check if the user chose a valid input for the filters.
+bool check_user_input(string choice){
+    string valid_options[] = {"1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"};
+    int size = sizeof(valid_options)/sizeof(valid_options[0]);
+    for (int i = 0 ; i < size ; i++){
+        if(choice == valid_options[i]){
+            return true;}}
+    return false;
+}
+
+// Function to check if the user chose a valid file name.
+bool isValidFilename(string& filename) {
+    const char* extension = strrchr(filename.c_str(), '.');
+    if (extension == nullptr) {
+        std::cerr << "Invalid filename: " << filename << std::endl;
+        return false;
+    }
+    return true;
+}
+
+// Main function for running the program.
 int main() {
-    //the main loop for the program allowing to multi-choose filters without exit unless user chose to by entering '6'
+
+    //The main loop for the program allowing to multi-choose filters without exit unless user chose to by entering '16'
     while (true) {
-        string filename, new_image_name;
+        string filename, new_image_name,final_framed_name;
+        string temp_framed_name = filename + "_temp_framed.jpg"; // Temporary filename
+        string final_temp_name = filename + "_final_framed.jpg";
         string choice;
         cout << "choose filter : \n";
-        cout << "[1] grayscale\n"<< "[2] Black and white\n" << "[3] Flip\n" << "[4] Blur\n" << "[5] Inverted colors\n" << "[6] Make image lighter or darker\n" << "[7] detect edges\n" << "bonus :\n" << "[13] infra_red\n" << "[16] Exit\n";
+        cout << "[1] grayscale\n"<< "[2] Black and white\n" << "[3] Flip\n" << "[4] Blur\n" << "[5] Inverted colors\n" << "[6] Make image lighter or darker\n" 
+        << "[7] detect edges\n" << "[8] Rotate Image(90° , 180° , 270°)\n" << "[9] Adding a Frame to the Picture\n" <<"[10] Crop\n"<<"[11] Resize\n"<<"[12] merge 2 photos\n" 
+        << "Bonus : \n"<<"[13] The Land of Wano\n"<< "[14] infra_red\n" << "[15] purple at night\n"<< "[16] Exit\n";
         cout << "Enter your choice: "; //take the user's choice to decide which filter to apply
         getline(cin,choice);
         bool check_input = check_user_input(choice);
         while(!check_input){ //checks if user entered an invalid option and if true it asks for another entry
-            cin.clear();fflush(stdin); 
-            cout << "Invalid Input\n\n";
+            cin.clear();fflush(stdin);
+            cout << "Invalid Input, Please try again.\n";
+            cout <<"______________________________________\n\n";
             cout << "choose filter : \n";
-            cout << "[1] grayscale\n"<< "[2] Black and white\n" << "[3] Flip\n" << "[4] Blur\n" << "[5] Inverted colors\n" << "[6] Make image lighter or darker\n" << "[7] detect edges\n" << "bonus : \n" << "[13] infra_red\n" << "[16] Exit\n";
-            cout << "Enter your choice: "; 
+            cout << "[1] grayscale\n"<< "[2] Black and white\n" << "[3] Flip\n" << "[4] Blur\n" << "[5] Inverted colors\n" << "[6] Make image lighter or darker\n" 
+            << "[7] detect edges\n" << "[8] Rotate Image(90° , 180° , 270°)\n" << "[9] Adding a Frame to the Picture\n" <<"[10] crop"<<"[11]Resize\n" << "[12] merge 2 photos\n" 
+            << "Bonus : \n" << "[13] The Land of Wano\n"<< "[14] infra_red\n" << "[15] purple at night\n"<< "[16] Exit\n";
+            cout << "Enter your choice: ";
             getline(cin,choice);
-            check_input = check_user_input(choice);}
-        
+            check_input = check_user_input(choice);
+        }
         if (choice == "16"){ //exiting program if user chose to
             break;}
         while(true){
-          try{
-              cout << "Enter file name : "; //get the file name of photo user want to edit on and must be included in the same folder
-              getline(cin,filename);
-              Image _(filename);
-              break;
-          }
-          catch(...){;}
+            try{
+                cout << "Enter file name : "; //get the file name of photo user want to edit on and must be included in the same folder
+                getline(cin,filename);
+                Image _(filename);
+                break;
+            }
+            catch(...){;}
         }
 
         //makes user choose the name of new filtered image and choose extention also
@@ -369,56 +1023,191 @@ int main() {
         bool valid = isValidFilename(new_image_name);
         //if user didn't provide a proper new image name , it will re-ask to enter a proper / valid one
         while(!valid){cout << "Enter new name to save with extension for it (.jpg, .bmp, .png, .tga): ";
-        cin >> new_image_name;
-        valid = isValidFilename(new_image_name);}
-
+            cin >> new_image_name;
+            valid = isValidFilename(new_image_name);
+        }
         Image Original_image(filename);
 
-        // according to users choice it calls one function from the filters to start
-            if(choice == "1"){
-                gray_scale(Original_image, new_image_name);
-            }
-            else if(choice == "2"){
-                BlackAndWhite(Original_image, new_image_name);}
+        // according to users choice it calls one function from the filters to start (1-15)
+        if(choice == "1"){
+            gray_scale(Original_image, new_image_name);
+        }
+        else if(choice == "2"){
+            BlackAndWhite(Original_image, new_image_name);
+        }
+        else if(choice == "3"){
+            cout<<"Choose your Flip [1] horizontal flip or a [2] vertical flip : ";
+            string flip_choice;
+            cin.clear();fflush(stdin);
+            getline(cin,flip_choice);
+            while(flip_choice != "1" && flip_choice != "2"){ //checks if users input is valid or not and if not it re-ask for a correct input
+                cout<<"invalid input\n\n";
+                cout<<"Choose your flip[1] horizontal flip or a [2] vertical flip : ";
+                flip_choice;cin.clear();fflush(stdin);
+                getline(cin,flip_choice);} //user choose between horizontal and vertical flipping
+            if(flip_choice == "1"){horizontalFlip(Original_image,new_image_name);}
+            else if(flip_choice == "2"){verticalFlip(Original_image,new_image_name);}
+        }
+        else if(choice == "4"){
+            blurImage(Original_image, new_image_name);
+        }
+        else if(choice == "5"){
+            invertColors(Original_image, new_image_name);
+        }
+        else if(choice == "6"){
+            Lighter_or_darker(Original_image, new_image_name);
+        }
+        else if(choice == "7"){
+            gray_scale(Original_image, new_image_name);
+            Image gray_image(new_image_name);
+            Image new_image(gray_image.width, gray_image.height);
+            edge_detection(gray_image,new_image_name,new_image);
+        }
+        else if (choice == "8"){
+            string choice;
+            while (true) {
+                cout << "Choose from the following:\n [1] 90° Rotation.\n [2] 180° Rotation.\n [3] 270° Rotation.\n Enter your choice: ";
+                cin >> choice;
+                Image image(filename);
 
-            else if(choice == "3"){
-                cout<<"do you want a [1] horizontal flip or a [2] vertical flip : ";
-                string flip_choice;
+                if (choice == "1") {
+                    rotateImageClockwise90(image, new_image_name);
+                    break;
+                } else if (choice == "2") {
+                    the180(image, new_image_name);
+                    break;
+                } else if (choice == "3") {
+                    rotateImageClockwise270(image, new_image_name);
+                    break;
+                } else {
+                    cout << "Invalid input! Please try again." << endl;
+                    continue;
+                }
+            }
+        }
+        else if (choice == "9") {
+            string frame_choice;
+            while (true) {
+                cout << "Choose from the following:\n [1] Add simple frame.\n [2] Add fancy frame.\n Enter your choice: ";
+                cin >> frame_choice;
+                if (frame_choice == "1") {
+                    addFrame(Original_image, new_image_name, 255, 255, 255);
+                    break;
+                } else if (frame_choice == "2") {
+                    addFrame(Original_image, temp_framed_name, 255, 255, 255);
+                    // Load the temporary framed image
+                    Image framed_image(temp_framed_name);
+                    final_framed_name = new_image_name;
+
+                    // Call addDoubleFrame on the loaded framed image
+                    // Create a second temporary filename for the final result with both frames
+                    string final_temp_name = filename + "_final_framed.jpg";
+                    addDoubleFrame(framed_image, final_temp_name, 0, 120, 255);
+
+                    // Load the final image with both frames
+                    Image finalImage(final_temp_name);
+
+                    // Add small white squares to the final image
+                    addCornerSquares(finalImage, 255, 255, 255);
+
+                    // Save the final image with squares
+                    finalImage.saveImage(final_framed_name);
+
+                    // Delete temporary images (optional error handling)
+                    if (!deleteTempFile(temp_framed_name) || !deleteTempFile(final_temp_name)) {
+                        return 1; // Indicate error during deletion
+                    }
+                    break;
+
+                } else {
+                    cout << "Invalid input! Please try again." << endl;
+                    continue;
+                }
+            }
+        }
+        else if (choice == "10") {
+            int width, height, startx, starty;
+            cout << "Enter width, height and starting points: ";
+            cin >> width >> height >> startx >> starty;
+            while (width <= 0 || height <= 0 || startx < 0 || starty < 0){
                 cin.clear();fflush(stdin);
-                getline(cin,flip_choice);
-                while(flip_choice != "1" && flip_choice != "2"){ //checks if users input is valid or not and if not it re-ask for a correct input
-                        cout<<"invalid input\n\n";
-                        cout<<"do you want a [1] horizontal flip or a [2] vertical flip : ";
-                        flip_choice;cin.clear();fflush(stdin);
-                        getline(cin,flip_choice);} //user choose between horizontal and vertical flipping
-                        if(flip_choice == "1"){horizontalFlip(Original_image,new_image_name);}
-                        else if(flip_choice == "2"){verticalFlip(Original_image,new_image_name);}
-                        }
-
-            else if(choice == "4"){
-                blurImage(Original_image, new_image_name);}
-
-            else if(choice == "5"){
-                invertColors(Original_image, new_image_name);}
-
-            else if(choice == "6"){
-                Lighter_or_darker(Original_image, new_image_name);}
-
-            else if(choice == "7"){
-                gray_scale(Original_image, new_image_name);
-                Image gray_image(new_image_name);
-                Image new_image(gray_image.width, gray_image.height);
-                edge_detection(gray_image,new_image_name,new_image); 
+                cout <<"\nError: please enter positive integers for (width , height or starting points)" << endl;
+                cout <<"________________________________________________________________________________\n";
+                cout << "Enter width, height, and starting points: ";
+                cin >> width >> height >> startx >> starty;
             }
-            else if(choice == "13"){
-                infra_red_filter(Original_image,new_image_name);
-            }    
-
-
+            crop(Original_image,new_image_name , width , height , startx, starty);
+        }
+        else if(choice == "11"){
+            int new_width, new_height;
+            cout<<"Enter the width and height : ";
+            cin >> new_width >> new_height;
+            while (new_width <= 0 || new_height <= 0){
+                cin.clear();fflush(stdin);
+                cout <<"\nError: please enter positive integers for width or height" <<endl;
+                cout <<"________________________________________________________________________________\n";
+                cout<<"Enter the width and height : ";
+                cin >> new_width >> new_height;}
+                
+            resize(Original_image, new_image_name,new_width,new_height);
+        }
+        else if (choice == "12"){
+            string filename2;
+            while(true){
+            cin.clear();fflush(stdin);    
+            try{
+                cout << "Enter 2nd file name : "; //get the file name of photo user want to edit on and must be included in the same folder
+                getline(cin,filename2);
+                Image _(filename2);
+                break;
+            }
+            catch(...){;}}
+            Image second_image(filename2);
+            string choice3;
+            cout << "crop to smaller image [1] or resize to bigger image [2] : ";
+            cin >> choice3;
+            while(choice3 != "1" && choice3 != "2"){
+                    cout << "invalid input\n";
+                    cout << "crop to smaller image [1] or resize to bigger image [2] : ";
+                    cin.clear();fflush(stdin);    
+                    cin >> choice3;
+                }
+            if(choice3 == "1"){
+                int min_height = min(Original_image.height, second_image.height);
+                int min_width = min(Original_image.width, second_image.width);
+                if (min_height <0 || min_width<0){
+                    cout <<"\nError: please enter positive integers for width or height" <<endl;
+                    cout <<"________________________________________________________________________________\n\n";
+                    continue;
+                }
+                merge(Original_image, second_image, new_image_name, min_width, min_height);
+            }
+            else if(choice3 == "2"){
+                int max_height = max(Original_image.height, second_image.height);
+                int max_width = max(Original_image.width, second_image.width);
+                if (max_height <0 || max_width<0){
+                    cout <<"\nError: please enter positive integers for width or height" <<endl;
+                    cout <<"________________________________________________________________________________\n\n";
+                    continue;
+                }
+                Image img1 = resize_for_merge(Original_image, max_width, max_height);
+                Image img2 = resize_for_merge(second_image, max_width, max_height);
+                merge(img1,img2,new_image_name, max_width, max_height);
+            }
+        }
+        else if(choice=="13"){
+            sun_light(Original_image, new_image_name);
+        }
+        else if(choice == "14"){
+            infra_red_filter(Original_image,new_image_name);
+        }
+        else if (choice == "15"){
+            filterofpurple(Original_image, new_image_name);
+        }
         //message to announce user that his image is saved successfully.
-        cout <<"Please check your saved items as the picture has been saved successfully.\n";
-        cout <<"________________________________________________________________________________\n\n";
+        cout <<"\nPlease check your saved items as the picture has been saved successfully as \"" << new_image_name << "\".\n";
+        cout <<"________________________________________________________________________________\n";
         cin.clear();fflush(stdin);
     }
     return 0;
-}
+    }
